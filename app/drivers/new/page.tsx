@@ -33,7 +33,7 @@ export default function NewDriverPage() {
         name: form.name,
         phone: form.phone,
         license_number: form.license_number,
-        license_expiry: form.license_expiry || null,
+        license_expiry: form.license_expiry || undefined,
         availability: form.availability,
         notes: form.notes || undefined,
       })
