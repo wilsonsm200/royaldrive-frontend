@@ -122,12 +122,32 @@ export default function ReportsPage() {
   }
 
   return (
-    <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '8px', height: '100%', boxSizing: 'border-box', overflow: 'hidden', background: '#0a0c10' }}>
+    <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '8px', minHeight: '100vh', boxSizing: 'border-box', background: '#0a0c10', overflowX: 'hidden' }}>
+      <style>{`
+        .reports-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 8px;
+        }
+        .reports-main-grid {
+          display: grid;
+          grid-template-columns: 1fr 1.8fr 1fr;
+          gap: 8px;
+        }
+        @media (max-width: 900px) {
+          .reports-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .reports-main-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
         <h1 style={{ fontSize: '17px', fontWeight: 800, color: '#fff', margin: 0 }}>Reports</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '3px', gap: '2px' }}>
             {(['weekly', 'monthly', 'yearly'] as Period[]).map(p => (
               <button key={p} onClick={() => setPeriod(p)} style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, background: period === p ? '#1a1c24' : 'transparent', color: period === p ? '#fff' : 'rgba(255,255,255,0.5)', boxShadow: period === p ? '0 1px 4px rgba(0,0,0,0.2)' : 'none' }}>
@@ -135,7 +155,7 @@ export default function ReportsPage() {
               </button>
             ))}
           </div>
-          <button onClick={() => printReceipt(stats, period)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={() => printReceipt(stats, period)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
             Generate {periodLabel} Receipt
           </button>
@@ -145,7 +165,7 @@ export default function ReportsPage() {
       {/* Revenue Overview — 6 cards */}
       <div>
         <p style={sectionLabel}>Revenue Overview — {periodLabel}</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '8px' }}>
+        <div className="reports-stats-grid">
           {[
             { label: 'Total Revenue', value: formatKES(stats.totalRevenue), accent: '#16a34a' },
             { label: 'Net Revenue', value: formatKES(netRevenue), accent: '#60a5fa', sub: 'after payouts' },
@@ -163,8 +183,8 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Operations + Chart + Service side by side */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.8fr 1fr', gap: '8px', flex: 1, minHeight: 0 }}>
+      {/* Operations + Chart + Service side by side (stacks on mobile) */}
+      <div className="reports-main-grid">
 
         {/* Operations */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -184,7 +204,7 @@ export default function ReportsPage() {
         {/* Bar Chart */}
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <p style={sectionLabel}>Revenue by {period === 'weekly' ? 'Day' : period === 'yearly' ? 'Month (12mo)' : 'Month (6mo)'}</p>
-          <div style={{ background: '#1a1c24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <div style={{ background: '#1a1c24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px', flex: 1, minHeight: '220px', display: 'flex', flexDirection: 'column' }}>
             {stats.revenueByMonth.every(m => m.amount === 0)
               ? <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 'auto' }}>No data for this period</p>
               : <>
@@ -211,7 +231,7 @@ export default function ReportsPage() {
         {/* Revenue by Service */}
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <p style={sectionLabel}>By Service Type</p>
-          <div style={{ background: '#1a1c24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px', flex: 1, overflowY: 'auto' }}>
+          <div style={{ background: '#1a1c24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px', flex: 1, minHeight: '160px', overflowY: 'auto' }}>
             {stats.revenueByService.length === 0
               ? <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '12px', margin: 'auto' }}>No data</p>
               : <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

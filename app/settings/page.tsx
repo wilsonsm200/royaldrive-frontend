@@ -115,6 +115,40 @@ export default function SettingsPage() {
         .save-btn { transition: all 0.15s ease; }
         .danger-btn:hover { background: #fee2e2 !important; }
         .danger-btn { transition: background 0.15s ease; }
+
+        .settings-layout {
+          display: grid;
+          grid-template-columns: 220px 1fr;
+          gap: 20px;
+          align-items: start;
+        }
+        .settings-sidebar {
+          display: flex;
+          flex-direction: column;
+        }
+        .settings-fields-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+          .settings-layout {
+            grid-template-columns: 1fr;
+          }
+          .settings-sidebar {
+            flex-direction: row;
+            overflow-x: auto;
+            gap: 4px;
+          }
+          .settings-sidebar button {
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
+          .settings-fields-grid {
+            grid-template-columns: 1fr;
+          }
+        }
       `}</style>
 
       {/* Header */}
@@ -134,10 +168,10 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '20px', alignItems: 'start' }}>
+      <div className="settings-layout">
 
         {/* Sidebar */}
-        <div style={{
+        <div className="settings-sidebar" style={{
           background: '#fff',
           border: '1px solid #e2e8f0',
           borderRadius: '16px',
@@ -197,7 +231,7 @@ export default function SettingsPage() {
             }}
           >
             {/* Panel Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '28px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{
                   width: '42px', height: '42px', borderRadius: '12px',
@@ -248,10 +282,8 @@ export default function SettingsPage() {
             <div style={{ height: '1px', background: '#f1f5f9', marginBottom: '24px' }} />
 
             {/* Fields */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: activeData.fields.length > 2 ? '1fr 1fr' : '1fr',
-              gap: '20px',
+            <div className="settings-fields-grid" style={{
+              gridTemplateColumns: activeData.fields.length > 2 ? undefined : '1fr',
             }}>
               {activeData.fields.map(f => {
                 const FieldIcon = f.icon
