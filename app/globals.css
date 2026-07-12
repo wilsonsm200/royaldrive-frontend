@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0c10;
+  --foreground: #ffffff;
+  
+  --navy-950: #060c1a;
+  --navy-900: #0a0f1e;
+  --navy-800: #0f1729;
+  --navy-700: #162035;
+  --navy-600: #1e2d4a;
+  --navy-500: #243660;
+  
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+  
+  --orange-400: #fb923c;
+  --orange-500: #f97316;
+  
+  --accent: #f59e0b;
+  --accent-glow: rgba(245, 158, 11, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--navy-800);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--navy-500);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-600);
+}
+
+/* Gold glow utility */
+.gold-glow {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+/* Glass card */
+.glass {
+  background: rgba(15, 23, 41, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  border-radius: 16px;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #f59e0b, #fb923c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== MOBILE RESPONSIVE STYLES ========== */
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+  /* Hide sidebar by default on mobile */
+  .sidebar-desktop {
+    transform: translateX(-100%);
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    width: 260px !important;
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar-desktop.open {
+    transform: translateX(0);
+  }
+  
+  /* Main content adjustments */
+  .main-content {
+    padding: 12px !important;
+  }
+  
+  /* Card grids become single column */
+  .cards-grid,
+  [style*="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Stat cards become 2 columns on mobile */
+  .stats-grid,
+  [style*="grid-template-columns: repeat(4, 1fr)"],
+  [style*="grid-template-columns: repeat(5, 1fr)"],
+  [style*="grid-template-columns: repeat(6, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  
+  /* Hide some columns in tables on mobile */
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  /* Make tables scroll horizontally */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Smaller font sizes on mobile */
+  body, button, input, select, textarea {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 18px !important;
+  }
+  
+  h2 {
+    font-size: 16px !important;
+  }
+  
+  /* Button adjustments */
+  button {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Card padding adjustments */
+  [style*="border-radius: 12px"],
+  [style*="border-radius: 14px"],
+  [style*="border-radius: 16px"] {
+    padding: 12px !important;
+  }
+  
+  /* Stat card number size */
+  [style*="font-size: 20px"],
+  [style*="font-size: 22px"],
+  [style*="font-size: 24px"] {
+    font-size: 18px !important;
+  }
+  
+  /* Header action buttons wrap */
+  .header-actions {
+    flex-wrap: wrap;
+    gap: 6px !important;
+  }
+}
+
+/* Small phones (max-width: 480px) */
+@media (max-width: 480px) {
+  .stats-grid,
+  [style*="grid-template-columns: repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .main-content {
+    padding: 8px !important;
+  }
+  
+  /* Stack flex rows */
+  .flex-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+  button, 
+  a, 
+  [role="button"],
+  select,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 40px;
+  }
+  
+  /* Better spacing for touch */
+  .card,
+  [style*="border-radius: 12px"],
+  [style*="border-radius: 14px"] {
+    margin-bottom: 8px;
+  }
+}
+
+/* Mobile menu button */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.sidebar-overlay.open {
+  display: block;
+}
