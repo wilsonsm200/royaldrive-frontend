@@ -75,6 +75,39 @@ body {
   background-clip: text;
 }
 
+/* ===== Sea photo background (landing page) ===== */
+.sea-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background-image: url('/landing_sea.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* slow ken-burns drift so the photo feels alive */
+.sea-bg::after {
+  content: '';
+  position: absolute;
+  inset: -6%;
+  background: inherit;
+  background-size: cover;
+  background-position: center;
+  animation: sea-pan 32s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes sea-pan {
+  from { transform: scale(1.06) translate(-1.5%, -1%); }
+  to   { transform: scale(1.14) translate(1.5%, 1%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sea-bg::after { animation: none; }
+}
+
 /* ========== MOBILE RESPONSIVE STYLES ========== */
 
 /* Mobile breakpoint */

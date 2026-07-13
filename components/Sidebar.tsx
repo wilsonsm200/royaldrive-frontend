@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import pb from '@/lib/pocketbase'
+import { supabase } from '@/lib/supabase'
 
 const links = [
   {
@@ -79,13 +79,15 @@ export default function Sidebar() {
     setIsMobileOpen(false)
   }, [pathname])
 
-  function handleLogout() {
-    localStorage.removeItem('rd_auth')
-    pb.authStore.clear()
+  async function handleLogout() {
+    await supabase.auth.signOut()
     router.push('/login')
   }
 
-  const user = pb.authStore.model
+  const [userEmail, setUserEmail] = useState('')
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUserEmail(data.user?.email || ''))
+  }, [])
 
   return (
     <>
@@ -264,7 +266,7 @@ export default function Sidebar() {
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
               }}>
-                {user?.email || 'admin@royaldrive.com'}
+                {userEmail || 'admin@royaldrive.com'}
               </p>
             </div>
           </div>

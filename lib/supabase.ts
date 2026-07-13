@@ -7,7 +7,13 @@ if (!supabaseUrl || !supabaseKey) {
   console.warn('Supabase credentials not found. Using fallback to PocketBase.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true, // needed for password-recovery links
+  },
+})
 
 // Helper functions to maintain compatibility with PocketBase hooks
 export async function supabaseQuery(table: string, options?: any) {

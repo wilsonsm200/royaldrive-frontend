@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import pb from '@/lib/pocketbase'
+import { supabase } from '@/lib/supabase'
 
 const titles: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -22,13 +22,15 @@ export default function Navbar() {
   const title = titles[pathname] || 'RoyalDrive'
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const user = pb.authStore.model as any
-  const userName = user?.name || user?.email?.split('@')[0] || 'Admin'
+  const [email, setEmail] = useState('')
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email || ''))
+  }, [])
+  const userName = email ? email.split('@')[0] : 'Admin'
   const userInitial = userName.charAt(0).toUpperCase()
 
-  const handleLogout = () => {
-    localStorage.removeItem('rd_auth')
-    pb.authStore.clear()
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
     router.push('/login')
   }
 

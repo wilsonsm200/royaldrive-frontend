@@ -1,8 +1,5 @@
-﻿// lib/db.ts - Unified database access (supports both PocketBase and Supabase)
+// lib/db.ts - Database access (Supabase)
 import { supabase } from './supabase'
-import pb from './pocketbase'
-
-const USE_SUPABASE = process.env.NEXT_PUBLIC_USE_SUPABASE === 'true'
 
 // ---------- Field mapping helpers (Supabase columns -> PocketBase-style names) ----------
 function mapReservation(row: any) {
@@ -44,333 +41,204 @@ function mapCreated(row: any) {
 export const db = {
   // ---------- Customers ----------
   async getCustomers() {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('customers').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-      return (data || []).map(mapCreated)
-    }
-    return await pb.collection('customers').getFullList({ sort: '-created' })
+    const { data, error } = await supabase.from('customers').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return (data || []).map(mapCreated)
   },
   async getCustomer(id: string) {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('customers').select('*').eq('id', id).single()
-      if (error) throw error
-      return mapCreated(data)
-    }
-    return await pb.collection('customers').getOne(id)
+    const { data, error } = await supabase.from('customers').select('*').eq('id', id).single()
+    if (error) throw error
+    return mapCreated(data)
   },
   async createCustomer(data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('customers').insert(data).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('customers').create(data)
+    const { data: record, error } = await supabase.from('customers').insert(data).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async updateCustomer(id: string, data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('customers').update(data).eq('id', id).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('customers').update(id, data)
+    const { data: record, error } = await supabase.from('customers').update(data).eq('id', id).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async deleteCustomer(id: string) {
-    if (USE_SUPABASE) {
-      const { error } = await supabase.from('customers').delete().eq('id', id)
-      if (error) throw error
-      return
-    }
-    return await pb.collection('customers').delete(id)
+    const { error } = await supabase.from('customers').delete().eq('id', id)
+    if (error) throw error
   },
 
   // ---------- Vehicles ----------
   async getVehicles() {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('vehicles').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-      return (data || []).map(mapCreated)
-    }
-    return await pb.collection('vehicles').getFullList({ sort: '-created' })
+    const { data, error } = await supabase.from('vehicles').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return (data || []).map(mapCreated)
   },
   async getVehicle(id: string) {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('vehicles').select('*').eq('id', id).single()
-      if (error) throw error
-      return mapCreated(data)
-    }
-    return await pb.collection('vehicles').getOne(id)
+    const { data, error } = await supabase.from('vehicles').select('*').eq('id', id).single()
+    if (error) throw error
+    return mapCreated(data)
   },
   async createVehicle(data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('vehicles').insert(data).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('vehicles').create(data)
+    const { data: record, error } = await supabase.from('vehicles').insert(data).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async updateVehicle(id: string, data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('vehicles').update(data).eq('id', id).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('vehicles').update(id, data)
+    const { data: record, error } = await supabase.from('vehicles').update(data).eq('id', id).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async deleteVehicle(id: string) {
-    if (USE_SUPABASE) {
-      const { error } = await supabase.from('vehicles').delete().eq('id', id)
-      if (error) throw error
-      return
-    }
-    return await pb.collection('vehicles').delete(id)
+    const { error } = await supabase.from('vehicles').delete().eq('id', id)
+    if (error) throw error
   },
 
   // ---------- Drivers ----------
   async getDrivers() {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('drivers').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-      return (data || []).map(mapCreated)
-    }
-    return await pb.collection('drivers').getFullList({ sort: '-created' })
+    const { data, error } = await supabase.from('drivers').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return (data || []).map(mapCreated)
   },
   async getDriver(id: string) {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('drivers').select('*').eq('id', id).single()
-      if (error) throw error
-      return mapCreated(data)
-    }
-    return await pb.collection('drivers').getOne(id)
+    const { data, error } = await supabase.from('drivers').select('*').eq('id', id).single()
+    if (error) throw error
+    return mapCreated(data)
   },
   async createDriver(data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('drivers').insert(data).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('drivers').create(data)
+    const { data: record, error } = await supabase.from('drivers').insert(data).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async updateDriver(id: string, data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('drivers').update(data).eq('id', id).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('drivers').update(id, data)
+    const { data: record, error } = await supabase.from('drivers').update(data).eq('id', id).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async deleteDriver(id: string) {
-    if (USE_SUPABASE) {
-      const { error } = await supabase.from('drivers').delete().eq('id', id)
-      if (error) throw error
-      return
-    }
-    return await pb.collection('drivers').delete(id)
+    const { error } = await supabase.from('drivers').delete().eq('id', id)
+    if (error) throw error
   },
 
   // ---------- Reservations ----------
   async getReservations() {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-      return (data || []).map(mapReservation)
-    }
-    return await pb.collection('reservations').getFullList({ sort: '-created', expand: 'customer,vehicle,driver' })
+    const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return (data || []).map(mapReservation)
   },
   async getReservation(id: string) {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('reservations').select('*').eq('id', id).single()
-      if (error) throw error
-      return mapReservation(data)
-    }
-    return await pb.collection('reservations').getOne(id, { expand: 'customer,vehicle,driver' })
+    const { data, error } = await supabase.from('reservations').select('*').eq('id', id).single()
+    if (error) throw error
+    return mapReservation(data)
   },
   async createReservation(data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('reservations').insert(unmapReservation(data)).select()
-      if (error) throw error
-      return mapReservation(record[0])
-    }
-    return await pb.collection('reservations').create(data)
+    const { data: record, error } = await supabase.from('reservations').insert(unmapReservation(data)).select()
+    if (error) throw error
+    return mapReservation(record[0])
   },
   async updateReservation(id: string, data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('reservations').update(unmapReservation(data)).eq('id', id).select()
-      if (error) throw error
-      return mapReservation(record[0])
-    }
-    return await pb.collection('reservations').update(id, data)
+    const { data: record, error } = await supabase.from('reservations').update(unmapReservation(data)).eq('id', id).select()
+    if (error) throw error
+    return mapReservation(record[0])
   },
   async deleteReservation(id: string) {
-    if (USE_SUPABASE) {
-      const { error } = await supabase.from('reservations').delete().eq('id', id)
-      if (error) throw error
-      return
-    }
-    return await pb.collection('reservations').delete(id)
+    const { error } = await supabase.from('reservations').delete().eq('id', id)
+    if (error) throw error
   },
 
   // ---------- Leasing Contracts ----------
   async getLeasingContracts() {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('leasing_contracts').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-      return (data || []).map(mapContract)
-    }
-    return await pb.collection('leasing_contracts').getFullList({ sort: '-created' })
+    const { data, error } = await supabase.from('leasing_contracts').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return (data || []).map(mapContract)
   },
   async getLeasingContract(id: string) {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('leasing_contracts').select('*').eq('id', id).single()
-      if (error) throw error
-      return mapContract(data)
-    }
-    return await pb.collection('leasing_contracts').getOne(id)
+    const { data, error } = await supabase.from('leasing_contracts').select('*').eq('id', id).single()
+    if (error) throw error
+    return mapContract(data)
   },
   async createLeasingContract(data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('leasing_contracts').insert(unmapContract(data)).select()
-      if (error) throw error
-      return mapContract(record[0])
-    }
-    return await pb.collection('leasing_contracts').create(data)
+    const { data: record, error } = await supabase.from('leasing_contracts').insert(unmapContract(data)).select()
+    if (error) throw error
+    return mapContract(record[0])
   },
   async updateLeasingContract(id: string, data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('leasing_contracts').update(unmapContract(data)).eq('id', id).select()
-      if (error) throw error
-      return mapContract(record[0])
-    }
-    return await pb.collection('leasing_contracts').update(id, data)
+    const { data: record, error } = await supabase.from('leasing_contracts').update(unmapContract(data)).eq('id', id).select()
+    if (error) throw error
+    return mapContract(record[0])
   },
   async deleteLeasingContract(id: string) {
-    if (USE_SUPABASE) {
-      const { error } = await supabase.from('leasing_contracts').delete().eq('id', id)
-      if (error) throw error
-      return
-    }
-    return await pb.collection('leasing_contracts').delete(id)
+    const { error } = await supabase.from('leasing_contracts').delete().eq('id', id)
+    if (error) throw error
   },
 
   // ---------- Leasing Owners ----------
   async getLeasingOwners() {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('leasing_owners').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-      return (data || []).map(mapCreated)
-    }
-    return await pb.collection('leasing_owners').getFullList()
+    const { data, error } = await supabase.from('leasing_owners').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return (data || []).map(mapCreated)
   },
   async getLeasingOwner(id: string) {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('leasing_owners').select('*').eq('id', id).single()
-      if (error) throw error
-      return mapCreated(data)
-    }
-    return await pb.collection('leasing_owners').getOne(id)
+    const { data, error } = await supabase.from('leasing_owners').select('*').eq('id', id).single()
+    if (error) throw error
+    return mapCreated(data)
   },
   async createLeasingOwner(data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('leasing_owners').insert(data).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('leasing_owners').create(data)
+    const { data: record, error } = await supabase.from('leasing_owners').insert(data).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async updateLeasingOwner(id: string, data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('leasing_owners').update(data).eq('id', id).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('leasing_owners').update(id, data)
+    const { data: record, error } = await supabase.from('leasing_owners').update(data).eq('id', id).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async deleteLeasingOwner(id: string) {
-    if (USE_SUPABASE) {
-      const { error } = await supabase.from('leasing_owners').delete().eq('id', id)
-      if (error) throw error
-      return
-    }
-    return await pb.collection('leasing_owners').delete(id)
+    const { error } = await supabase.from('leasing_owners').delete().eq('id', id)
+    if (error) throw error
   },
 
   // ---------- Payments ----------
   async getPayments(filter?: { category?: string }) {
-    if (USE_SUPABASE) {
-      let query = supabase.from('payments').select('*').order('created_at', { ascending: false })
-      if (filter?.category) query = query.eq('category', filter.category)
-      const { data, error } = await query
-      if (error) throw error
-      return (data || []).map(mapCreated)
-    }
-    let pbFilter: any = undefined
-    if (filter?.category) pbFilter = { filter: `category='${filter.category}'` }
-    return await pb.collection('payments').getFullList(pbFilter)
+    let query = supabase.from('payments').select('*').order('created_at', { ascending: false })
+    if (filter?.category) query = query.eq('category', filter.category)
+    const { data, error } = await query
+    if (error) throw error
+    return (data || []).map(mapCreated)
   },
   async getPayment(id: string) {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('payments').select('*').eq('id', id).single()
-      if (error) throw error
-      return mapCreated(data)
-    }
-    return await pb.collection('payments').getOne(id)
+    const { data, error } = await supabase.from('payments').select('*').eq('id', id).single()
+    if (error) throw error
+    return mapCreated(data)
   },
   async createPayment(data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('payments').insert(data).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('payments').create(data)
+    const { data: record, error } = await supabase.from('payments').insert(data).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async updatePayment(id: string, data: any) {
-    if (USE_SUPABASE) {
-      const { data: record, error } = await supabase.from('payments').update(data).eq('id', id).select()
-      if (error) throw error
-      return mapCreated(record[0])
-    }
-    return await pb.collection('payments').update(id, data)
+    const { data: record, error } = await supabase.from('payments').update(data).eq('id', id).select()
+    if (error) throw error
+    return mapCreated(record[0])
   },
   async deletePayment(id: string) {
-    if (USE_SUPABASE) {
-      const { error } = await supabase.from('payments').delete().eq('id', id)
-      if (error) throw error
-      return
-    }
-    return await pb.collection('payments').delete(id)
+    const { error } = await supabase.from('payments').delete().eq('id', id)
+    if (error) throw error
   },
 
   // ---------- Settings ----------
   async getSettings() {
-    if (USE_SUPABASE) {
-      const { data, error } = await supabase.from('settings').select('*')
-      if (error) throw error
-      const map: Record<string, string> = {}
-      ;(data || []).forEach((r: any) => { map[r.key] = r.value })
-      return map
-    }
-    const records = await pb.collection('settings').getFullList()
+    const { data, error } = await supabase.from('settings').select('*')
+    if (error) throw error
     const map: Record<string, string> = {}
-    records.forEach((r: any) => { map[r.key] = r.value })
+    ;(data || []).forEach((r: any) => { map[r.key] = r.value })
     return map
   },
   async setSetting(key: string, value: string) {
-    if (USE_SUPABASE) {
-      const { data: existing } = await supabase.from('settings').select('id').eq('key', key).maybeSingle()
-      if (existing) {
-        const { error } = await supabase.from('settings').update({ value }).eq('id', existing.id)
-        if (error) throw error
-      } else {
-        const { error } = await supabase.from('settings').insert({ key, value })
-        if (error) throw error
-      }
-      return
-    }
-    try {
-      const existing = await pb.collection('settings').getFirstListItem(`key="${key}"`)
-      await pb.collection('settings').update(existing.id, { value })
-    } catch {
-      await pb.collection('settings').create({ key, value })
+    const { data: existing } = await supabase.from('settings').select('id').eq('key', key).maybeSingle()
+    if (existing) {
+      const { error } = await supabase.from('settings').update({ value }).eq('id', existing.id)
+      if (error) throw error
+    } else {
+      const { error } = await supabase.from('settings').insert({ key, value })
+      if (error) throw error
     }
   },
 }

@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useSettings } from '@/hooks/useSettings'
+import { supabase } from '@/lib/supabase'
 import {
   Building2, Phone, Mail, MapPin,
   Target, DollarSign, FileText, Info,
@@ -43,6 +44,13 @@ const SECTIONS = [
     ],
   },
   {
+    id: 'security',
+    label: 'Security',
+    icon: Settings,
+    description: 'Change your admin password',
+    fields: [],
+  },
+  {
     id: 'system',
     label: 'System Info',
     icon: Settings,
@@ -59,6 +67,24 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
   const [activeSection, setActiveSection] = useState('business')
+
+  // Change-password state (Security section)
+  const [newPass, setNewPass] = useState('')
+  const [confirmPass, setConfirmPass] = useState('')
+  const [pwBusy, setPwBusy] = useState(false)
+  const [pwMsg, setPwMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+
+  async function handleChangePassword() {
+    setPwMsg(null)
+    if (newPass.length < 6) { setPwMsg({ type: 'err', text: 'Password must be at least 6 characters.' }); return }
+    if (newPass !== confirmPass) { setPwMsg({ type: 'err', text: 'Passwords do not match.' }); return }
+    setPwBusy(true)
+    const { error } = await supabase.auth.updateUser({ password: newPass })
+    setPwBusy(false)
+    if (error) { setPwMsg({ type: 'err', text: error.message }); return }
+    setNewPass(''); setConfirmPass('')
+    setPwMsg({ type: 'ok', text: 'Password updated successfully.' })
+  }
 
   useEffect(() => {
     if (!loading) setForm(settings)
@@ -251,7 +277,7 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {activeSection !== 'system' && (
+              {activeSection !== 'system' && activeSection !== 'security' && (
                 <button
                   className="save-btn"
                   onClick={() => handleSave(activeSection, activeData.fields)}
@@ -281,7 +307,40 @@ export default function SettingsPage() {
             {/* Divider */}
             <div style={{ height: '1px', background: '#f1f5f9', marginBottom: '24px' }} />
 
-            {/* Fields */}
+            {/* Security: Change Password */}
+            {activeSection === 'security' ? (
+              <div style={{ maxWidth: 420 }}>
+                {[
+                  { label: 'New Password', val: newPass, set: setNewPass },
+                  { label: 'Confirm New Password', val: confirmPass, set: setConfirmPass },
+                ].map(f => (
+                  <div key={f.label} style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '8px' }}>{f.label}</label>
+                    <input
+                      className="settings-input"
+                      type="password"
+                      value={f.val}
+                      onChange={e => { f.set(e.target.value); setPwMsg(null) }}
+                      onKeyDown={e => e.key === 'Enter' && handleChangePassword()}
+                      placeholder="••••••••"
+                      style={{ width: '100%', padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: '10px', fontSize: '13px', color: '#1e293b', background: '#f8fafc' }}
+                    />
+                  </div>
+                ))}
+                {pwMsg && (
+                  <p style={{ fontSize: '12px', margin: '0 0 14px', fontWeight: 600, color: pwMsg.type === 'ok' ? '#059669' : '#dc2626' }}>{pwMsg.text}</p>
+                )}
+                <button
+                  className="save-btn"
+                  onClick={handleChangePassword}
+                  disabled={pwBusy}
+                  style={{ padding: '10px 22px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: pwBusy ? 'default' : 'pointer', opacity: pwBusy ? 0.7 : 1, boxShadow: '0 2px 10px rgba(99,102,241,0.3)', display: 'flex', alignItems: 'center', gap: '7px' }}
+                >
+                  {pwBusy ? <><Loader2 size={14} style={{ animation: 'spin 0.8s linear infinite' }} /> Updating</> : 'Update Password'}
+                </button>
+              </div>
+            ) : (
+            /* Fields */
             <div className="settings-fields-grid" style={{
               gridTemplateColumns: activeData.fields.length > 2 ? undefined : '1fr',
             }}>
@@ -334,6 +393,7 @@ export default function SettingsPage() {
                 )
               })}
             </div>
+            )}
           </div>
 
           {/* Danger Zone */}

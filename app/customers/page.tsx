@@ -21,6 +21,9 @@ function initials(name: string) {
 
 const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#db2777', '#d97706', '#16a34a', '#0891b2']
 
+// Shared column template for the header + each row
+const GRID_COLS = 'minmax(160px,1.6fr) minmax(140px,1.4fr) minmax(90px,1fr) 90px 110px 80px 190px'
+
 export default function CustomersPage() {
   const router = useRouter()
   const [customers, setCustomers] = useState<any[]>([])
@@ -141,10 +144,19 @@ export default function CustomersPage() {
         style={{ width: '300px', padding: '8px 12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '13px', outline: 'none', background: 'rgba(255,255,255,0.04)', color: '#fff', marginBottom: '16px' }}
       />
 
-      {/* Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '14px' }}>
+      {/* Table */}
+      <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', overflow: 'hidden', background: '#12141c' }}>
+        {/* Header row */}
+        <div style={{ display: 'grid', gridTemplateColumns: GRID_COLS, gap: '12px', padding: '10px 16px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          {['Customer', 'Contact', 'Location', 'Bookings', 'Total Spent', 'Last', 'Actions'].map((h, i) => (
+            <span key={h} style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', textAlign: (i >= 3 && i <= 5) || i === 6 ? 'right' : 'left' }}>{h}</span>
+          ))}
+        </div>
+
+        {/* Scrollable rows */}
+        <div style={{ maxHeight: 'calc(100vh - 240px)', overflowY: 'auto' }}>
         {filtered.length === 0 && (
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>No customers found</p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', padding: '20px 16px' }}>No customers found</p>
         )}
 
         {filtered.map((c, idx) => {
@@ -154,60 +166,62 @@ export default function CustomersPage() {
           const isBooking = bookingId === c.id
           const isExpanded = expandedId === c.id
           const isEditing = editingId === c.id
+          const open = isBooking || isExpanded || isEditing
 
           return (
-            <div key={c.id} style={{
-              background: '#1a1c24',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-              transition: 'box-shadow 0.2s',
-            }}>
+            <div key={c.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: open ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
 
-              {/* Card Top */}
-              <div style={{ padding: '16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                <div style={{
-                  width: '44px', height: '44px', borderRadius: '12px',
-                  background: avatarColor, color: '#fff',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '15px', fontWeight: 700, flexShrink: 0,
-                }}>
-                  {initials(name)}
-                </div>
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                    <p style={{ fontWeight: 700, fontSize: '14px', color: '#fff', margin: 0 }}>{name}</p>
+              {/* Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: GRID_COLS, gap: '12px', padding: '10px 16px', alignItems: 'center' }}>
+                {/* Customer */}
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0 }}>
+                  <div style={{
+                    width: '34px', height: '34px', borderRadius: '9px',
+                    background: avatarColor, color: '#fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '12px', fontWeight: 700, flexShrink: 0,
+                  }}>
+                    {initials(name)}
+                  </div>
+                  <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <p style={{ fontWeight: 600, fontSize: '13px', color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</p>
                     {onTrip
-                      ? <span style={{ background: 'rgba(234,88,12,0.15)', color: '#f97316', border: '1px solid rgba(234,88,12,0.3)', borderRadius: '20px', padding: '1px 7px', fontSize: '9px', fontWeight: 700 }}>ON TRIP</span>
-                      : <span style={{ background: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '20px', padding: '1px 7px', fontSize: '9px', fontWeight: 700 }}>AVAILABLE</span>
+                      ? <span style={{ background: 'rgba(234,88,12,0.15)', color: '#f97316', border: '1px solid rgba(234,88,12,0.3)', borderRadius: '20px', padding: '1px 6px', fontSize: '8px', fontWeight: 700, flexShrink: 0 }}>ON TRIP</span>
+                      : <span style={{ background: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '20px', padding: '1px 6px', fontSize: '8px', fontWeight: 700, flexShrink: 0 }}>FREE</span>
                     }
                   </div>
-                  <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', margin: 0 }}>{c.phone || '-'} {c.email ? `Â· ${c.email}` : ''}</p>
-                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: '2px 0 0' }}>{c.location || '-'}</p>
                 </div>
-              </div>
-
-              {/* Stats Row */}
-              <div style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                {[
-                  { label: 'Bookings', value: count, color: '#60a5fa' },
-                  { label: 'Total Spent', value: formatKES(totalSpent), color: '#4ade80' },
-                  { label: 'Last Booking', value: last ? timeAgo(last) : '-', color: 'rgba(255,255,255,0.5)' },
-                ].map((s, i) => (
-                  <div key={s.label} style={{
-                    flex: 1, padding: '10px 14px', textAlign: 'center',
-                    borderRight: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none',
-                    cursor: s.label === 'Bookings' ? 'pointer' : 'default',
-                  }}
-                    onClick={() => s.label === 'Bookings' && setExpandedId(isExpanded ? null : c.id)}>
-                    <p style={{ fontSize: '13px', fontWeight: 700, color: s.color, margin: 0 }}>{s.value}</p>
-                    <p style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      {s.label === 'Bookings' ? `${s.label} ${isExpanded ? 'â–²' : 'â–¼'}` : s.label}
-                    </p>
-                  </div>
-                ))}
+                {/* Contact */}
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.phone || '-'}</p>
+                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '1px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.email || ''}</p>
+                </div>
+                {/* Location */}
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.location || '-'}</p>
+                {/* Bookings (clickable) */}
+                <p onClick={() => setExpandedId(isExpanded ? null : c.id)}
+                  style={{ fontSize: '13px', fontWeight: 700, color: '#60a5fa', margin: 0, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}>
+                  {count} {isExpanded ? '▲' : '▼'}
+                </p>
+                {/* Total Spent */}
+                <p style={{ fontSize: '13px', fontWeight: 700, color: '#4ade80', margin: 0, textAlign: 'right' }}>{formatKES(totalSpent)}</p>
+                {/* Last */}
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', margin: 0, textAlign: 'right', whiteSpace: 'nowrap' }}>{last ? timeAgo(last) : '-'}</p>
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => { setBookingId(isBooking ? null : c.id); setEditingId(null); setExpandedId(null) }}
+                    style={{ padding: '5px 10px', background: isBooking ? '#dc2626' : '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    {isBooking ? 'Cancel' : '+ Book'}
+                  </button>
+                  <button onClick={() => { setEditingId(isEditing ? null : c.id); setBookingId(null); setExpandedId(null); setEditForm({ name: c.name || '', phone: String(c.phone || ''), email: c.email || '', location: c.location || '', notes: c.notes || '' }) }}
+                    style={{ padding: '5px 10px', background: isEditing ? '#dc2626' : 'rgba(255,255,255,0.08)', color: isEditing ? '#fff' : 'rgba(255,255,255,0.7)', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    {isEditing ? 'Close' : 'Edit'}
+                  </button>
+                  <button onClick={() => router.push('/customers/' + c.id)}
+                    style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    View
+                  </button>
+                </div>
               </div>
 
               {/* Expanded Bookings */}
@@ -358,25 +372,10 @@ export default function CustomersPage() {
                 </div>
               )}
 
-              {/* Action Buttons */}
-              <div style={{ padding: '10px 16px', display: 'flex', gap: '8px', background: 'rgba(255,255,255,0.02)' }}>
-                <button onClick={() => { setBookingId(isBooking ? null : c.id); setEditingId(null); setExpandedId(null) }}
-                  style={{ flex: 1, padding: '7px', background: isBooking ? '#dc2626' : '#2563eb', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
-                  {isBooking ? 'Cancel' : '+ Book'}
-                </button>
-                <button onClick={() => { setEditingId(isEditing ? null : c.id); setBookingId(null); setExpandedId(null); setEditForm({ name: c.name || '', phone: String(c.phone || ''), email: c.email || '', location: c.location || '', notes: c.notes || '' }) }}
-                  style={{ flex: 1, padding: '7px', background: isEditing ? '#dc2626' : 'rgba(255,255,255,0.08)', color: isEditing ? '#fff' : 'rgba(255,255,255,0.7)', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>
-                  {isEditing ? 'Cancel Edit' : 'Edit'}
-                </button>
-                <button onClick={() => router.push('/customers/' + c.id)}
-                  style={{ flex: 1, padding: '7px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: 'none', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' }}>
-                  View â†’
-                </button>
-              </div>
-
             </div>
           )
         })}
+        </div>
       </div>
     </div>
   )
